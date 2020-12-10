@@ -51,7 +51,8 @@ public class CustomersController {
         newCustomer = customerServices.save(newCustomer);
 
         HttpHeaders responseHeaders = new HttpHeaders();
-        URI newCustomerURI = ServletUriComponentsBuilder.fromCurrentRequest().path("/custcode").buildAndExpand(newCustomer.getCustcode()).toUri();
+        URI newCustomerURI = ServletUriComponentsBuilder.fromCurrentRequest().path("/{custcode}")
+                .buildAndExpand(newCustomer.getCustcode()).toUri();
         responseHeaders.setLocation(newCustomerURI);
 
         return new ResponseEntity<>(newCustomer, responseHeaders, HttpStatus.CREATED);
@@ -63,4 +64,16 @@ public class CustomersController {
         Customer c = customerServices.save(replaceCustomer);
         return new ResponseEntity<>(c, HttpStatus.OK);
     }
+    @PatchMapping(value = "/customer/{customerid}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<?> updateCustomerById(@PathVariable long customerid, @RequestBody Customer updateCustomer){
+        customerServices.update(updateCustomer, customerid);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/customer/{customerid}")
+    public ResponseEntity<?> deleteCustomerById(@PathVariable long customerid){
+        customerServices.delete(customerid);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 }

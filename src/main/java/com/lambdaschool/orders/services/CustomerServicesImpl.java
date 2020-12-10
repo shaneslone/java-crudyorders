@@ -57,6 +57,7 @@ public class CustomerServicesImpl implements CustomerServices {
                                     .orElseThrow(() -> new EntityNotFoundException("Agent " + customer.getAgent().getAgentcode() + " not found!"));
         newCustomer.setAgent(newAgent);
 
+        newCustomer.getOrders().clear();
         for(Order o : customer.getOrders()){
             Order newOrder = new Order();
             newOrder.setOrdamount(o.getOrdamount());
@@ -105,16 +106,54 @@ public class CustomerServicesImpl implements CustomerServices {
     @Transactional
     @Override
     public void delete(long id) {
-        customersRepository.deleteAll();
+        customersRepository.deleteById(id);
     }
 
     @Override
     public Customer update(Customer customer, long id) {
-        return null;
+        Customer updateCustomer = customersRepository.findById(id)
+                    .orElseThrow(() -> new EntityNotFoundException("Customer " + id + " not found!"));
+
+        if(customer.getCustname() != null) updateCustomer.setCustname(customer.getCustname());
+        if(customer.getCustcity() != null) updateCustomer.setCustcity(customer.getCustcity());
+        if(customer.getWorkingarea() != null) updateCustomer.setWorkingarea(customer.getWorkingarea());
+        if(customer.getCustcountry() != null) updateCustomer.setCustcountry(customer.getCustcountry());
+        if(customer.getGrade() != null) updateCustomer.setGrade(customer.getGrade());
+        if(customer.hasValueForOpeningamt) updateCustomer.setOpeningamt(customer.getOpeningamt());
+        if(customer.hasValueForReceiveamt) updateCustomer.setReceiveamt(customer.getReceiveamt());
+        if(customer.hasValueForPaymentamt) updateCustomer.setPaymentamt(customer.getPaymentamt());
+        if(customer.hasValueForOutstandingamt) updateCustomer.setOutstandingamt(customer.getOutstandingamt());
+        if(customer.getPhone() != null) updateCustomer.setPhone(customer.getPhone());
+        if(customer.getAgent() != null) {
+            Agent newAgent = agentsRepository.findById(customer.getAgent().getAgentcode())
+                .orElseThrow(() -> new EntityNotFoundException("Agent " + customer.getAgent().getAgentcode() + " not found!"));
+            updateCustomer.setAgent(newAgent);
+        }
+
+        if(customer.getOrders().size() > 0) {
+            updateCustomer.getOrders().clear();
+            for (Order o : customer.getOrders()) {
+                Order newOrder = new Order();
+                newOrder.setOrdamount(o.getOrdamount());
+                newOrder.setAdvanceamount(o.getAdvanceamount());
+                newOrder.setCustomer(updateCustomer);
+                newOrder.setOrderdescription(o.getOrderdescription());
+                Set<Payment> payments = new HashSet<>();
+                newOrder.setPayments(payments);
+                for (Payment p : o.getPayments()) {
+                    Payment newPayment = paymentRepository.findById(p.getPaymentid())
+                            .orElseThrow(() -> new EntityNotFoundException("Payment " + p.getPaymentid() + "not found!"));
+                    newOrder.getPayments().add(newPayment);
+                }
+                updateCustomer.getOrders().add(newOrder);
+            }
+        }
+
+        return customersRepository.save(updateCustomer);
     }
 
     @Override
     public void deleteAll() {
-
+        customersRepository.deleteAll();
     }
 }

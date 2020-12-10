@@ -8,6 +8,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "customers")
+@JsonIgnoreProperties(value = {"hasValueForOpeningamt", "hasValueForReceiveamt", "hasValueForPaymentamt", "hasValueForOutstandingamt"})
 public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -26,6 +27,18 @@ public class Customer {
     private double paymentamt;
     private double outstandingamt;
     private String phone;
+
+    @Transient
+    public boolean hasValueForOpeningamt = false;
+
+    @Transient
+    public boolean hasValueForReceiveamt = false;
+
+    @Transient
+    public boolean hasValueForPaymentamt = false;
+
+    @Transient
+    public boolean hasValueForOutstandingamt = false;
 
     @ManyToOne
     @JoinColumn(name = "agentcode", nullable = false)
@@ -106,6 +119,7 @@ public class Customer {
     }
 
     public void setOpeningamt(double openingamt) {
+        hasValueForOpeningamt = true;
         this.openingamt = openingamt;
     }
 
@@ -114,6 +128,7 @@ public class Customer {
     }
 
     public void setReceiveamt(double receiveamt) {
+        hasValueForReceiveamt = true;
         this.receiveamt = receiveamt;
     }
 
@@ -122,6 +137,7 @@ public class Customer {
     }
 
     public void setPaymentamt(double paymentamt) {
+        hasValueForPaymentamt = true;
         this.paymentamt = paymentamt;
     }
 
@@ -154,6 +170,26 @@ public class Customer {
     }
 
     public void setOutstandingamt(double outstandingamt) {
+        hasValueForOutstandingamt = true;
         this.outstandingamt = outstandingamt;
+    }
+
+    @Override
+    public String toString() {
+        return "Customer{" +
+                "custcode=" + custcode +
+                ", custname='" + custname + '\'' +
+                ", custcity='" + custcity + '\'' +
+                ", workingarea='" + workingarea + '\'' +
+                ", custcountry='" + custcountry + '\'' +
+                ", grade='" + grade + '\'' +
+                ", openingamt=" + openingamt +
+                ", receiveamt=" + receiveamt +
+                ", paymentamt=" + paymentamt +
+                ", outstandingamt=" + outstandingamt +
+                ", phone='" + phone + '\'' +
+                ", agent=" + agent +
+                ", orders=" + orders +
+                '}';
     }
 }
