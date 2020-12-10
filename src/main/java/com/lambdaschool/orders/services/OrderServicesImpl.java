@@ -77,6 +77,7 @@ public class OrderServicesImpl implements OrderServices {
         return rtnList;
     }
 
+    @Transactional
     @Override
     public void delete(long orderid) {
         ordersRepository.deleteById(orderid);

@@ -109,6 +109,7 @@ public class CustomerServicesImpl implements CustomerServices {
         customersRepository.deleteById(id);
     }
 
+    @Transactional
     @Override
     public Customer update(Customer customer, long id) {
         Customer updateCustomer = customersRepository.findById(id)
@@ -152,6 +153,7 @@ public class CustomerServicesImpl implements CustomerServices {
         return customersRepository.save(updateCustomer);
     }
 
+    @Transactional
     @Override
     public void deleteAll() {
         customersRepository.deleteAll();

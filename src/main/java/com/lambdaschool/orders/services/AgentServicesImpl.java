@@ -27,6 +27,7 @@ public class AgentServicesImpl implements AgentServices {
         return a;
     }
 
+    @Transactional
     @Override
     public void deleteUnassigned(long agentid) {
         Agent agent = agentsRepository.findById(agentid)
